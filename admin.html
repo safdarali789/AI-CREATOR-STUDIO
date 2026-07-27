@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Creator Studio - Admin Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+            min-height: 100vh; 
+            color: #e2e8f0; 
+        }
+        .header { 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(10px);
+            padding: 16px 24px; 
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 200;
+        }
+        .logo { 
+            font-size: 22px; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
+        .admin-badge {
+            background: rgba(236, 72, 153, 0.2);
+            border: 1px solid rgba(236, 72, 153, 0.5);
+            color: #f472b6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+        }
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+        }
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin: 16px 0 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .section-title:first-child { margin-top: 0; }
+        .control-group {
+            margin-bottom: 12px;
+        }
+        .label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px 10px;
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 11px;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            outline: none;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Courier New', monospace;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .btn {
+            padding: 10px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        .btn-full {
+            grid-column: 1 / -1;
+        }
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .color-input input[type="color"] {
+            width: 40px;
+            height: 32px;
+            padding: 2px;
+            cursor: pointer;
+        }
+        .color-input input[type="text"] {
+            flex: 1;
+        }
+        .status {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .status.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 10px;
+            color: #93c5fd;
+            line-height: 1.6;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(148, 163, 184, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 11px;
+        }
+        .form-group input:focus {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            outline: none;
+        }
+        .form-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .quick-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .quick-link {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .quick-link:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #86efac;
+            overflow-x: auto;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">⚙️ Pro Creator Admin</div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="admin-badge">🔐 Admin Panel</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- CONTAINER -->
+    <div class="container">
+        <!-- QUICK LINKS -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-header">🚀 Quick Links</div>
+            <div class="quick-links">
+                <a href="index.html" target="_blank" class="quick-link">👀 View Creator</a>
+                <a href="javascript:copyCode()" class="quick-link">📋 Copy Code</a>
+                <button class="quick-link" onclick="downloadCode()" style="border: none;">📥 Download Code</button>
+                <button class="quick-link" onclick="openUpdateGuide()" style="border: none;">📖 How to Update</button>
+            </div>
+        </div>
+
+        <!-- UPDATE CODE -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="status" id="status"></div>
+            <div class="card-header">📝 Update Main Code</div>
+            <div class="info-box" style="margin-bottom: 16px;">
+                <strong>📌 یہاں فائل کا code لکھیں یا paste کریں۔</strong><br>
+                تمام changes براہ راست save ہوں گی localStorage میں۔
+            </div>
+            <div class="control-group">
+                <label class="label">HTML Code</label>
+                <textarea id="codeEditor" placeholder="Paste or edit HTML code here..."></textarea>
+            </div>
+            <div class="button-group">
+                <button class="btn" onclick="saveCode()">💾 Save Code</button>
+                <button class="btn btn-danger" onclick="loadDefaultCode()">↺ Reset</button>
+            </div>
+        </div>
+
+        <!-- APPEARANCE -->
+        <div class="card">
+            <div class="card-header">🎨 Appearance</div>
+            
+            <div class="section-title">App Name</div>
+            <div class="control-group">
+                <input type="text" id="appName" value="Pro Creator Studio" placeholder="App name...">
+            </div>
+
+            <div class="section-title">Primary Colors</div>
+            <div class="control-group">
+                <label class="label">Primary Gradient 1</label>
+                <input type="color" id="color1" value="#3b82f6">
+            </div>
+            <div class="control-group">
+                <label class="label">Primary Gradient 2</label>
+                <input type="color" id="color2" value="#8b5cf6">
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+            </div>
+        </div>
+
+        <!-- LOGIN SETTINGS -->
+        <div class="card">
+            <div class="card-header">🔐 Login Settings</div>
+            
+            <div class="section-title">Admin Account</div>
+            <div class="control-group">
+                <label class="label">Admin Email</label>
+                <input type="email" id="adminEmail" value="admin@procreattor.com">
+            </div>
+            <div class="control-group">
+                <label class="label">Admin Password</label>
+                <input type="password" id="adminPassword" value="admin123">
+            </div>
+
+            <div class="section-title">Features</div>
+            <div style="font-size: 11px; color: #cbd5e1; line-height: 1.8; margin-bottom: 12px;">
+                <label style="display: flex; gap: 8px; margin-bottom: 8px;">
+                    <input type="checkbox" id="enableLogin" checked onchange="saveSett()"> 
+                    <span>Enable Free First Design</span>
+                </label>
+                <label style="display: flex; gap: 8px;">
+                    <input type="checkbox" id="enable3D" checked onchange="saveSett()"> 
+                    <span>Enable 3D Text</span>
+                </label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="saveSett()">💾 Save</button>
+            </div>
+        </div>
+
+        <!-- FEATURES -->
+        <div class="card">
+            <div class="card-header">✨ Features</div>
+            
+            <div class="section-title">Platforms</div>
+            <div class="control-group">
+                <textarea id="platformsList" placeholder="Platform name, width x height">Instagram,1080,1080
+Story,1080,1350
+Facebook,1200,628</textarea>
+            </div>
+
+            <div class="section-title">Colors</div>
+            <div class="control-group">
+                <textarea id="colorsList" placeholder="Hex colors (one per line)">#1e88e5
+#7e57c2
+#ec407a</textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="saveFeat()">💾 Save Features</button>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="card">
+            <div class="card-header">📄 Content</div>
+            
+            <div class="section-title">Welcome Message</div>
+            <div class="control-group">
+                <textarea id="welcomeMsg">Welcome to Pro Creator Studio!</textarea>
+            </div>
+
+            <div class="section-title">Footer Text</div>
+            <div class="control-group">
+                <textarea id="footerText">© 2024 Pro Creator Studio. All rights reserved.</textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn" onclick="saveContent()">💾 Save Content</button>
+            </div>
+        </div>
+
+        <!-- SYSTEM -->
+        <div class="card">
+            <div class="card-header">⚙️ System</div>
+            
+            <div class="info-box" style="margin-bottom: 16px;">
+                <strong>Version:</strong> 1.0.0<br>
+                <strong>Last Updated:</strong> <span id="lastUpdate">Never</span><br>
+                <strong>Storage:</strong> <span id="storageUsed">0</span> KB
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                <button class="btn" onclick="exportSettings()">📤 Export Settings</button>
+            </div>
+        </div>
+
+        <!-- DOCUMENTATION -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-header">📚 How to Update</div>
+            <div class="info-box">
+                <strong>1. Code کو Edit کریں:</strong><br>
+                "Update Main Code" section میں code paste/edit کریں۔<br><br>
+                
+                <strong>2. Save کریں:</strong><br>
+                "Save Code" بٹن دبائیں۔<br><br>
+                
+                <strong>3. Refresh کریں:</strong><br>
+                Creator tab کو refresh کریں۔<br><br>
+                
+                <strong>4. GitHub میں Upload:</strong><br>
+                تمام changes automatic ہی sync ہو جائیں گی localStorage سے۔<br><br>
+                
+                <strong>⚡ فائل کو delete یا recreate کرنے کی ضرورت نہیں!</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- UPDATE GUIDE MODAL -->
+    <div class="modal" id="guideModal">
+        <div class="modal-content">
+            <div class="modal-header">📖 How to Use Admin Panel</div>
+            
+            <div style="font-size: 11px; color: #cbd5e1; line-height: 1.8;">
+                <p><strong>🔐 Admin Access:</strong></p>
+                <p>یہ panel صرف Admin کے لیے ہے۔</p>
+                <div class="code-block">
+Email: admin@procreattor.com<br>
+Password: admin123
+                </div>
+
+                <p style="margin-top: 12px;"><strong>📝 Code Update کرنے کے لیے:</strong></p>
+                <p>1. "Update Main Code" میں HTML paste کریں</p>
+                <p>2. "Save Code" دبائیں</p>
+                <p>3. localhost پر test کریں</p>
+                <p>4. GitHub میں upload کریں</p>
+
+                <p style="margin-top: 12px;"><strong>🎨 Settings Update:</strong></p>
+                <p>- App Name change کریں</p>
+                <p>- Colors customize کریں</p>
+                <p>- Features enable/disable کریں</p>
+
+                <p style="margin-top: 12px;"><strong>💡 فائل delete نہیں کرنی!</strong></p>
+                <p>صرف Code update کریں - باقی سب خود ہو جائے گا۔</p>
+            </div>
+
+            <button class="form-btn" onclick="closeModal('guideModal')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Load settings
+        function loadSettings() {
+            const saved = localStorage.getItem('adminSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('appName').value = settings.appName || 'Pro Creator Studio';
+                document.getElementById('color1').value = settings.color1 || '#3b82f6';
+                document.getElementById('color2').value = settings.color2 || '#8b5cf6';
+                document.getElementById('adminEmail').value = settings.adminEmail || 'admin@procreattor.com';
+                document.getElementById('adminPassword').value = settings.adminPassword || 'admin123';
+                document.getElementById('enableLogin').checked = settings.enableLogin !== false;
+                document.getElementById('enable3D').checked = settings.enable3D !== false;
+                document.getElementById('welcomeMsg').value = settings.welcomeMsg || 'Welcome!';
+                document.getElementById('footerText').value = settings.footerText || '© 2024';
+            }
+
+            const code = localStorage.getItem('creatorCode');
+            if (code) {
+                document.getElementById('codeEditor').value = code;
+            }
+
+            updateLastUpdate();
+            updateStorageUsed();
+        }
+
+        function saveSett() {
+            saveSe();
+        }
+
+        function saveSe() {
+            const settings = {
+                appName: document.getElementById('appName').value,
+                color1: document.getElementById('color1').value,
+                color2: document.getElementById('color2').value,
+                adminEmail: document.getElementById('adminEmail').value,
+                adminPassword: document.getElementById('adminPassword').value,
+                enableLogin: document.getElementById('enableLogin').checked,
+                enable3D: document.getElementById('enable3D').checked,
+                welcomeMsg: document.getElementById('welcomeMsg').value,
+                footerText: document.getElementById('footerText').value,
+                lastUpdate: new Date().toLocaleString()
+            };
+            localStorage.setItem('adminSettings', JSON.stringify(settings));
+            showStatus('Settings saved! ✅');
+        }
+
+        function saveFeat() {
+            const platforms = document.getElementById('platformsList').value;
+            const colors = document.getElementById('colorsList').value;
+            localStorage.setItem('platforms', platforms);
+            localStorage.setItem('colors', colors);
+            showStatus('Features saved! ✅');
+        }
+
+        function saveContent() {
+            saveSe();
+            showStatus('Content saved! ✅');
+        }
+
+        function saveCode() {
+            const code = document.getElementById('codeEditor').value;
+            if (!code.trim()) {
+                showStatus('Code خالی ہے!');
+                return;
+            }
+            localStorage.setItem('creatorCode', code);
+            const settings = JSON.parse(localStorage.getItem('adminSettings') || '{}');
+            settings.lastUpdate = new Date().toLocaleString();
+            localStorage.setItem('adminSettings', JSON.stringify(settings));
+            showStatus('Code saved! 🎉 Refresh creator page to see changes');
+            updateLastUpdate();
+        }
+
+        function loadDefaultCode() {
+            if (confirm('کیا آپ نے copy کر لیا؟ یہ undo نہیں ہو سکتا!')) {
+                localStorage.removeItem('creatorCode');
+                document.getElementById('codeEditor').value = '';
+                showStatus('Code reset! ✅');
+            }
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeEditor').value;
+            navigator.clipboard.writeText(code).then(() => {
+                showStatus('Code copied to clipboard! 📋');
+            });
+        }
+
+        function downloadCode() {
+            const code = document.getElementById('codeEditor').value;
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(code));
+            element.setAttribute('download', 'pro-creator-studio.html');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showStatus('Code downloaded! 📥');
+        }
+
+        function exportSettings() {
+            const settings = localStorage.getItem('adminSettings');
+            const code = localStorage.getItem('creatorCode');
+            const data = { settings, code, exportDate: new Date().toLocaleString() };
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2)));
+            element.setAttribute('download', 'pro-creator-backup.json');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            showStatus('Settings exported! 📤');
+        }
+
+        function clearAllData() {
+            if (confirm('تمام data delete ہوگا! کیا آپ کو یقین ہے؟')) {
+                localStorage.clear();
+                showStatus('All data cleared! ⚠️');
+                setTimeout(() => location.reload(), 1500);
+            }
+        }
+
+        function showStatus(msg) {
+            const status = document.getElementById('status');
+            status.textContent = msg;
+            status.classList.add('show');
+            setTimeout(() => status.classList.remove('show'), 3000);
+        }
+
+        function updateLastUpdate() {
+            const settings = JSON.parse(localStorage.getItem('adminSettings') || '{}');
+            document.getElementById('lastUpdate').textContent = settings.lastUpdate || 'Never';
+        }
+
+        function updateStorageUsed() {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length;
+                }
+            }
+            document.getElementById('storageUsed').textContent = (total / 1024).toFixed(2);
+        }
+
+        function openUpdateGuide() {
+            document.getElementById('guideModal').classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'index.html';
+        }
+
+        // Check admin access
+        window.onload = function() {
+            const isAdmin = localStorage.getItem('adminLoggedIn');
+            if (!isAdmin) {
+                // Redirect to login
+                const email = prompt('Admin Email:');
+                const password = prompt('Admin Password:');
+                
+                const settings = JSON.parse(localStorage.getItem('adminSettings') || '{}');
+                if (email === (settings.adminEmail || 'admin@procreattor.com') && 
+                    password === (settings.adminPassword || 'admin123')) {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    loadSettings();
+                } else {
+                    alert('Invalid credentials!');
+                    window.location.href = 'index.html';
+                }
+            } else {
+                loadSettings();
+            }
+        };
+    </script>
+</body>
+</html>
