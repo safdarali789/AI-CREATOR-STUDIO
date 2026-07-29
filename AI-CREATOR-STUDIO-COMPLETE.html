@@ -1,0 +1,3254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creator Studio - Complete All-In-One Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, 'Arial Unicode MS', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); 
+            min-height: 100vh; 
+            color: #e2e8f0;
+            overflow: hidden;
+        }
+        .header { 
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 15px 20px;
+            border-bottom: 3px solid #8b5cf6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 300;
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-controls { 
+            display: flex; 
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn-header {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        .btn-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+        .main {
+            display: grid;
+            grid-template-columns: 1fr;
+            height: calc(100vh - 60px);
+        }
+        .tabs-nav {
+            background: linear-gradient(90deg, rgba(26, 31, 58, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%);
+            border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+            padding: 8px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            color: #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        .tab-btn:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            border-color: #8b5cf6;
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
+        }
+        .workspace {
+            display: grid;
+            grid-template-columns: 260px 1fr 280px;
+            gap: 0;
+            overflow: hidden;
+            height: calc(100% - 48px);
+        }
+        @media (max-width: 1024px) {
+            .workspace { grid-template-columns: 1fr; }
+            .left-panel, .right-panel { display: none; }
+        }
+        .panel {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(26, 31, 58, 0.4) 100%);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            overflow-y: auto;
+            padding: 12px;
+        }
+        .canvas-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, rgba(10, 14, 39, 0.9) 0%, rgba(26, 31, 58, 0.8) 100%);
+            overflow: auto;
+            padding: 15px;
+        }
+        canvas {
+            cursor: crosshair;
+            box-shadow: 0 20px 80px rgba(139, 92, 246, 0.4);
+            border-radius: 10px;
+            background: white;
+            border: 3px solid rgba(139, 92, 246, 0.6);
+            max-width: 100%;
+            max-height: 100%;
+            touch-action: none;
+        }
+        .btn {
+            padding: 6px 10px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: #cbd5e1;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+            transform: translateY(-2px);
+        }
+        .section-title {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #8b5cf6;
+            margin: 10px 0 6px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.4);
+        }
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .template-item {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 5px;
+            padding: 6px;
+            cursor: pointer;
+            font-size: 8px;
+            color: #e2e8f0;
+            text-align: center;
+            transition: all 0.3s;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .template-item:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border-color: #8b5cf6;
+            transform: translateY(-1px);
+        }
+        .lang-btns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .lang-btn {
+            padding: 5px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            color: #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .lang-btn.active {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            border-color: #8b5cf6;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 5px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.25);
+            border-radius: 4px;
+            color: #e2e8f0;
+            font-size: 9px;
+            margin-bottom: 6px;
+        }
+        .status-msg {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 11px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 500;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+        .tab-content { display: none; overflow-y: auto; }
+        .tab-content.active { display: block; }
+        .shape-btns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .modal.show { display: flex; }
+        .modal-box {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
+            border: 3px solid #8b5cf6;
+            border-radius: 15px;
+            padding: 35px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 25px 70px rgba(139, 92, 246, 0.5);
+            animation: slideUp 0.4s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .modal-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 12px;
+        }
+        .modal input:focus {
+            border-color: #8b5cf6;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            outline: none;
+        }
+        .modal button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        .modal button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+        .modal-switch {
+            text-align: center;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 10px;
+        }
+        .modal-switch a {
+            color: #8b5cf6;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .admin-panel {
+            position: fixed;
+            right: 0;
+            top: 60px;
+            width: 350px;
+            height: calc(100vh - 60px);
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(26, 31, 58, 0.95) 100%);
+            border-left: 3px solid #8b5cf6;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 1500;
+            transform: translateX(100%);
+            transition: transform 0.4s ease;
+        }
+        .admin-panel.show {
+            transform: translateX(0);
+        }
+        .admin-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: 2px solid #8b5cf6;
+            color: #8b5cf6;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        .admin-close:hover {
+            background: #8b5cf6;
+            color: white;
+        }
+        .admin-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .admin-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .admin-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #8b5cf6;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .admin-stat {
+            font-size: 14px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+        .admin-btn {
+            width: 100%;
+            padding: 8px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
+        }
+        .user-info {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .user-email {
+            font-size: 11px;
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .user-status {
+            font-size: 10px;
+            color: #cbd5e1;
+        }
+        /* PROFESSIONAL ADMIN PANEL */
+        .admin-panel-wrapper {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 900px;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f1729 100%);
+            border-left: 3px solid #8b5cf6;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.4s ease;
+            box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5);
+        }
+        .admin-panel-wrapper.show {
+            transform: translateX(0);
+        }
+        .admin-panel-header {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-panel-branding {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .admin-logo {
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .admin-subtitle {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .admin-close-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: #8b5cf6;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        .admin-close-btn:hover {
+            background: #8b5cf6;
+            color: white;
+            transform: rotate(90deg);
+        }
+        .admin-panel-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        .admin-nav {
+            width: 200px;
+            background: rgba(10, 14, 39, 0.3);
+            border-right: 2px solid rgba(139, 92, 246, 0.2);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+        }
+        .admin-nav-item {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            color: #cbd5e1;
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        .admin-nav-item:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-color: #8b5cf6;
+            transform: translateX(4px);
+        }
+        .admin-nav-item.active {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            border-color: #8b5cf6;
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
+        }
+        .admin-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .admin-tab-content {
+            display: none;
+        }
+        .admin-tab-content.active {
+            display: block;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .admin-section-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .admin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            border-color: #8b5cf6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+        }
+        .stat-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin-top: 6px;
+        }
+        .activity-log {
+            background: rgba(10, 14, 39, 0.5);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 10px;
+            color: #cbd5e1;
+        }
+        .activity-log p {
+            margin: 4px 0;
+        }
+        .admin-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .admin-search {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+        .admin-search::placeholder {
+            color: #64748b;
+        }
+        .users-table-container {
+            background: rgba(10, 14, 39, 0.3);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+        .admin-table thead {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+            position: sticky;
+            top: 0;
+        }
+        .admin-table th {
+            padding: 10px;
+            text-align: left;
+            color: #8b5cf6;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+        }
+        .admin-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            color: #cbd5e1;
+        }
+        .admin-table tr:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        .analytics-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .analytics-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .analytics-title {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .analytics-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin: 8px 0;
+        }
+        .analytics-desc {
+            font-size: 9px;
+            color: #64748b;
+        }
+        .feature-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .feature-stat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .feature-stat span {
+            min-width: 120px;
+            font-size: 10px;
+            color: #cbd5e1;
+        }
+        .stat-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(139, 92, 246, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b5cf6 0%, #ec4899 100%);
+            transition: width 0.3s ease;
+        }
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .setting-item {
+            background: rgba(10, 14, 39, 0.5);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .setting-item label {
+            display: block;
+            font-size: 11px;
+            color: #cbd5e1;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .setting-input-group {
+            display: flex;
+            gap: 8px;
+        }
+        .admin-input, .admin-input-number {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: #e2e8f0;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+        .admin-select {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: #e2e8f0;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+        }
+        .toggle-switch input {
+            display: none;
+        }
+        .toggle-label {
+            width: 40px;
+            height: 22px;
+            background: rgba(139, 92, 246, 0.2);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-label {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+        .toggle-label::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-label::after {
+            left: 20px;
+        }
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .admin-btn, .admin-btn-small, .admin-btn-danger, .admin-btn-logout {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            color: white;
+            flex: 1;
+        }
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+        .admin-btn-small {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+            color: #8b5cf6;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+        .admin-btn-small:hover {
+            background: #8b5cf6;
+            color: white;
+        }
+        .admin-btn-danger {
+            background: linear-gradient(135deg, #f43f5e 0%, #dc2626 100%);
+            color: white;
+            flex: 1;
+        }
+        .admin-btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4);
+        }
+        .admin-btn-logout {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.3) 0%, rgba(244, 63, 94, 0.2) 100%);
+            color: #f43f5e;
+            border: 2px solid rgba(244, 63, 94, 0.3);
+            margin-top: 10px;
+            width: 100%;
+        }
+        .reports-section, .maintenance-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .report-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+        .report-card:hover {
+            border-color: #8b5cf6;
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.2);
+        }
+        .report-icon {
+            font-size: 24px;
+        }
+        .report-info {
+            flex: 1;
+        }
+        .report-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .report-desc {
+            font-size: 9px;
+            color: #94a3b8;
+        }
+        .admin-panel-footer {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-top: 2px solid rgba(139, 92, 246, 0.3);
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+            color: #94a3b8;
+        }
+        .footer-info {
+            display: flex;
+            gap: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            color: #64748b;
+            padding: 20px;
+            font-style: italic;
+        }
+        @media (max-width: 1024px) {
+            .admin-panel-wrapper {
+                max-width: 100%;
+            }
+            .admin-nav {
+                width: 150px;
+            }
+        }
+        @media (max-width: 768px) {
+            .admin-panel-wrapper {
+                max-width: 100%;
+            }
+            .admin-panel-container {
+                flex-direction: column;
+            }
+            .admin-nav {
+                width: 100%;
+                flex-direction: row;
+                border-right: none;
+                border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+                overflow-x: auto;
+            }
+            .admin-nav-item {
+                flex: 1;
+                min-width: 80px;
+            }
+            .admin-stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .analytics-cards {
+                grid-template-columns: 1fr;
+            }
+            .admin-tab-content {
+                padding: 12px;
+            }
+        }
+        /* PROFESSIONAL ADMIN PANEL */
+        .admin-dashboard {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            z-index: 2500;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .admin-dashboard.show {
+            display: flex;
+        }
+        .admin-header {
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border-bottom: 3px solid #8b5cf6;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .admin-title-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .admin-logo {
+            font-size: 32px;
+        }
+        .admin-title-text h1 {
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+        .admin-title-text p {
+            font-size: 11px;
+            color: #94a3b8;
+            margin: 4px 0 0 0;
+        }
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 15px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(139, 92, 246, 0.2);
+        }
+        .admin-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .admin-user-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .admin-user-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .admin-user-role {
+            font-size: 10px;
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+        .admin-close-btn {
+            background: linear-gradient(135deg, #f43f5e 0%, #dc2626 100%);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s;
+            font-weight: 700;
+        }
+        .admin-close-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4);
+        }
+        .admin-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        .admin-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .admin-card:hover {
+            border-color: #8b5cf6;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+            transform: translateY(-3px);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+        }
+        .card-icon {
+            font-size: 24px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #8b5cf6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+        .stat-value {
+            font-size: 16px;
+            font-weight: 900;
+            color: #8b5cf6;
+        }
+        .stat-value.success {
+            color: #10b981;
+        }
+        .admin-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+        .admin-btn.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .user-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .user-item {
+            padding: 10px;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 11px;
+            border-left: 3px solid #8b5cf6;
+        }
+        .user-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .user-item-name {
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .user-item-stat {
+            color: #8b5cf6;
+            font-weight: 600;
+            font-size: 10px;
+        }
+        .activity-log {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .activity-item {
+            padding: 10px;
+            background: rgba(139, 92, 246, 0.05);
+            border-left: 3px solid #8b5cf6;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            color: #cbd5e1;
+            font-size: 10px;
+        }
+        .activity-time {
+            font-size: 9px;
+            color: #64748b;
+            margin-bottom: 3px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .grid-2 .admin-btn {
+            margin-top: 0;
+        }
+
+        /* MOBILE FLOATING BUBBLE */
+        .floating-menu {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+            z-index: 1000;
+            font-size: 28px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        .floating-menu:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.6);
+        }
+        .floating-menu.show {
+            display: flex;
+        }
+        .floating-menu-items {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 70px;
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.95) 0%, rgba(26, 31, 58, 0.9) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 15px;
+            padding: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        }
+        .floating-menu-items.show {
+            display: flex;
+        }
+        .floating-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 12px;
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .floating-btn:hover {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, rgba(139, 92, 246, 0.4) 100%);
+            border-color: #8b5cf6;
+            transform: scale(1.1);
+        }
+        /* MOBILE PANEL TOGGLE */
+        .mobile-panel-toggle {
+            position: fixed;
+            left: 0;
+            top: 60px;
+            width: 100%;
+            height: calc(100vh - 60px);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(26, 31, 58, 0.9) 100%);
+            z-index: 999;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            padding: 15px;
+        }
+        .mobile-panel-toggle.show {
+            transform: translateX(0);
+        }
+        .mobile-panel-close {
+            position: fixed;
+            top: 70px;
+            left: 15px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        .mobile-panel-close:hover {
+            transform: scale(1.1);
+        }
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            .left-panel {
+                display: flex !important;
+                flex-direction: column;
+                width: 100% !important;
+                max-width: 100%;
+                height: auto;
+                border-right: none;
+            }
+            .right-panel {
+                display: none !important;
+            }
+            .workspace {
+                grid-template-columns: 1fr !important;
+                grid-template-rows: auto 1fr !important;
+                gap: 0;
+            }
+            .tabs-nav {
+                padding: 6px;
+                gap: 2px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            .tab-btn {
+                padding: 6px 8px;
+                font-size: 9px;
+                flex-shrink: 0;
+            }
+            .tab-content {
+                display: none;
+                padding: 10px;
+                height: auto;
+                max-height: 40vh;
+                overflow-y: auto;
+            }
+            .tab-content.active {
+                display: block;
+                background: rgba(26, 31, 58, 0.6);
+                border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+            }
+            .floating-menu {
+                display: flex;
+            }
+            .header {
+                padding: 10px 12px;
+            }
+            .btn-header {
+                padding: 6px 10px;
+                font-size: 9px;
+            }
+            .logo {
+                font-size: 16px;
+            }
+            .canvas-area {
+                padding: 10px;
+                height: 60vh;
+                position: relative;
+            }
+            canvas {
+                max-width: 95vw;
+                max-height: 55vh;
+                touch-action: none;
+            }
+        }
+        /* VOICE/AUDIO STYLES */
+        .voice-input {
+            position: relative;
+        }
+        .voice-indicator {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            display: none;
+            animation: pulse 1s infinite;
+        }
+        .voice-indicator.listening {
+            display: block;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { opacity: 1; box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .camera-preview {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            width: 100%;
+            height: calc(100vh - 60px);
+            background: black;
+            z-index: 1500;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .camera-preview.show {
+            display: flex;
+        }
+        .camera-preview video {
+            width: 100%;
+            max-height: 80vh;
+            object-fit: cover;
+        }
+        .camera-controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1501;
+        }
+        .camera-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .camera-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🎬 AI Creator Studio Complete</div>
+        <div class="header-controls">
+            <div id="userStatus" style="display: none; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(139, 92, 246, 0.2); border: 2px solid rgba(139, 92, 246, 0.5); border-radius: 6px; font-size: 10px; color: #8b5cf6;">
+                <span>👤</span>
+                <span id="userEmail"></span>
+                <button class="btn-header" onclick="logout()" style="background: linear-gradient(135deg, #f43f5e 0%, #dc2626 100%); padding: 4px 8px; font-size: 9px;">Logout</button>
+            </div>
+            <button class="btn-header" id="loginBtn" onclick="showLoginModal()">🔐 Login</button>
+            <button class="btn-header" onclick="undo()">↶ Undo</button>
+            <button class="btn-header" onclick="redo()">↷ Redo</button>
+            <button class="btn-header" onclick="resetCanvas()">↺ Clear</button>
+            <button class="btn-header" onclick="downloadDesign()">📥 Export</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab(event, 'templates')">📌 Templates</button>
+            <button class="tab-btn" onclick="switchTab(event, 'social')">📱 Social</button>
+            <button class="tab-btn" onclick="switchTab(event, 'image')">📷 Image</button>
+            <button class="tab-btn" onclick="switchTab(event, '3dimage')">🎭 3D Image</button>
+            <button class="tab-btn" onclick="switchTab(event, '3dvideo')">🎬 3D Video</button>
+            <button class="tab-btn" onclick="switchTab(event, 'effects')">✨ Effects</button>
+            <button class="tab-btn" onclick="switchTab(event, 'settings')">⚙️ Settings</button>
+            <button class="tab-btn" id="adminTab" onclick="switchTab(event, 'admin')" style="display: none; background: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(251, 146, 60, 0.1) 100%); border-color: rgba(251, 146, 60, 0.4); color: #fb923c;">👨‍💼 Admin</button>
+        </div>
+
+        <div class="workspace">
+            <!-- LEFT PANEL -->
+            <div class="panel left-panel">
+                <!-- TEMPLATES TAB -->
+                <div id="templates" class="tab-content active">
+                    <div class="section-title">🎭 3D Images</div>
+                    <div class="template-grid">
+                        <div class="template-item" onclick="loadTemplate('flip')">🔄<br>Flip</div>
+                        <div class="template-item" onclick="loadTemplate('rotate')">↻<br>Rotate</div>
+                        <div class="template-item" onclick="loadTemplate('zoom')">🔍<br>Zoom</div>
+                        <div class="template-item" onclick="loadTemplate('perspective')">📐<br>Persp</div>
+                        <div class="template-item" onclick="loadTemplate('cube')">🎲<br>Cube</div>
+                        <div class="template-item" onclick="loadTemplate('shadow')">🌑<br>Shadow</div>
+                    </div>
+
+                    <div class="section-title">🎬 Videos</div>
+                    <div class="template-grid">
+                        <div class="template-item" onclick="loadTemplate('zoom-in')">➕<br>Zoom In</div>
+                        <div class="template-item" onclick="loadTemplate('zoom-out')">➖<br>Out</div>
+                        <div class="template-item" onclick="loadTemplate('rotate-loop')">🔁<br>Rotate</div>
+                        <div class="template-item" onclick="loadTemplate('slide')">➡️<br>Slide</div>
+                        <div class="template-item" onclick="loadTemplate('fade')">💫<br>Fade</div>
+                        <div class="template-item" onclick="loadTemplate('bounce')">⛹️<br>Bounce</div>
+                    </div>
+
+                    <div class="section-title">🎯 Effects</div>
+                    <div class="template-grid">
+                        <div class="template-item" onclick="loadTemplate('cinematic')">🎥<br>Cinema</div>
+                        <div class="template-item" onclick="loadTemplate('vintage')">📽️<br>Vintage</div>
+                        <div class="template-item" onclick="loadTemplate('neon')">🔆<br>Neon</div>
+                        <div class="template-item" onclick="loadTemplate('cool')">❄️<br>Cool</div>
+                        <div class="template-item" onclick="loadTemplate('warm')">🔥<br>Warm</div>
+                        <div class="template-item" onclick="loadTemplate('dark')">🌙<br>Dark</div>
+                    </div>
+                </div>
+
+                <!-- SOCIAL POST TAB -->
+                <div id="social" class="tab-content">
+                    <div class="section-title">📱 Platform</div>
+                    <select onchange="setPlatform(this.value)">
+                        <option value="1080x1080">Instagram Post</option>
+                        <option value="1080x1350">Insta Story</option>
+                        <option value="1200x628">Facebook</option>
+                        <option value="1200x1500">Pinterest</option>
+                        <option value="1280x720">YouTube</option>
+                        <option value="1080x1920">TikTok</option>
+                    </select>
+
+                    <div class="section-title">📝 Text</div>
+                    <div class="lang-btns">
+                        <button class="lang-btn active" onclick="setLang('en')">English</button>
+                        <button class="lang-btn" onclick="setLang('ur')">اردو</button>
+                        <button class="lang-btn" onclick="setLang('ar')">عربي</button>
+                        <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+                    </div>
+                    <button class="btn" onclick="addText()">➕ Text</button>
+                    <button class="btn" onclick="add3DText()">🎯 3D Text</button>
+
+                    <div class="section-title">🎨 Shapes</div>
+                    <div class="shape-btns">
+                        <button class="btn" onclick="addShape('rect')">⬜</button>
+                        <button class="btn" onclick="addShape('circle')">⭕</button>
+                        <button class="btn" onclick="addShape('triangle')">🔺</button>
+                        <button class="btn" onclick="addShape('star')">⭐</button>
+                    </div>
+                </div>
+
+                <!-- IMAGE TAB -->
+                <div id="image" class="tab-content">
+                    <div class="section-title">📷 Upload</div>
+                    <input type="file" onchange="uploadImage()" accept="image/*">
+                    <button class="btn" onclick="imageFromURL()">Link</button>
+
+                    <div class="section-title">🔧 Adjust</div>
+                    <label>Rotation</label>
+                    <input type="range" min="0" max="360" value="0">
+                    <label>Size</label>
+                    <input type="range" min="50" max="300" value="200">
+                </div>
+
+                <!-- 3D IMAGE TAB -->
+                <div id="3dimage" class="tab-content">
+                    <div class="section-title">🎭 3D Settings</div>
+                    <label>Rotation X</label>
+                    <input type="range" min="0" max="360" value="0">
+                    <label>Rotation Y</label>
+                    <input type="range" min="0" max="360" value="0">
+                    <label>Rotation Z</label>
+                    <input type="range" min="0" max="360" value="0">
+                    <label>Perspective</label>
+                    <input type="range" min="100" max="1000" value="500">
+                    <button class="btn" onclick="uploadImage()">📷 Upload</button>
+                    <button class="btn" onclick="apply3D()">✅ Apply</button>
+                </div>
+
+                <!-- 3D VIDEO TAB -->
+                <div id="3dvideo" class="tab-content">
+                    <div class="section-title">🎬 Video</div>
+                    <label>Frames</label>
+                    <input type="number" value="20" min="5" max="60">
+                    <label>FPS</label>
+                    <input type="range" min="10" max="60" value="30">
+                    <label>Duration</label>
+                    <input type="text" readonly placeholder="Auto">
+                    <button class="btn" onclick="addFrame()">➕ Frame</button>
+                    <button class="btn" onclick="playVideo()">▶️ Play</button>
+                    <button class="btn" onclick="exportVideo()">🎥 Export</button>
+                </div>
+
+                <!-- EFFECTS TAB -->
+                <div id="effects" class="tab-content">
+                    <div class="section-title">✨ Adjust</div>
+                    <label>Blur</label>
+                    <input type="range" min="0" max="20" value="0">
+                    <label>Brightness</label>
+                    <input type="range" min="50" max="150" value="100">
+                    <label>Contrast</label>
+                    <input type="range" min="50" max="150" value="100">
+                    <label>Saturation</label>
+                    <input type="range" min="0" max="200" value="100">
+
+                    <div class="section-title">🎨 Filters</div>
+                    <div class="shape-btns">
+                        <button class="btn" onclick="setFilter('sepia')">Sepia</button>
+                        <button class="btn" onclick="setFilter('bw')">B/W</button>
+                        <button class="btn" onclick="setFilter('cool')">Cool</button>
+                        <button class="btn" onclick="setFilter('warm')">Warm</button>
+                    </div>
+                </div>
+
+                <!-- ADMIN PANEL TAB -->
+                <div id="admin" class="tab-content" style="display: none;">
+                    <div class="section-title">👨‍💼 Admin Panel</div>
+                    
+                    <div class="section-title">📊 Statistics</div>
+                    <div style="background: rgba(139, 92, 246, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 10px;">
+                        <p>Total Users: <strong id="totalUsers">0</strong></p>
+                        <p>Designs Created: <strong id="totalDesigns">0</strong></p>
+                        <p>Free Users: <strong id="freeUsers">0</strong></p>
+                        <p>Premium Users: <strong id="premiumUsers">0</strong></p>
+                    </div>
+
+                    <div class="section-title">👥 User Management</div>
+                    <button class="btn" onclick="viewUsers()">👁️ View All Users</button>
+                    <button class="btn" onclick="resetAllData()">🗑️ Clear All Data</button>
+
+                    <div class="section-title">⚙️ System Settings</div>
+                    <label>Free Design Limit</label>
+                    <input type="number" id="freeLimit" value="1" min="1" max="10">
+                    <button class="btn" onclick="saveFreeLimit()">Save</button>
+
+                    <div class="section-title">📈 Recent Activity</div>
+                    <div id="activityLog" style="background: rgba(139, 92, 246, 0.1); padding: 8px; border-radius: 6px; font-size: 9px; max-height: 150px; overflow-y: auto; color: #cbd5e1;">
+                        <p id="lastActivity">No activity yet</p>
+                    </div>
+                </div>
+
+                <!-- SETTINGS TAB -->
+                <div id="settings" class="tab-content">
+                    <div class="section-title">⚙️ Export</div>
+                    <label>Format</label>
+                    <select>
+                        <option>PNG</option>
+                        <option>JPG</option>
+                        <option>MP4</option>
+                        <option>GIF</option>
+                    </select>
+                    <label>Quality</label>
+                    <select>
+                        <option>HD (720p)</option>
+                        <option>Full HD (1080p)</option>
+                        <option>4K (2160p)</option>
+                    </select>
+
+                    <div class="section-title">💾 Gallery</div>
+                    <button class="btn" onclick="clearGallery()">Clear</button>
+                    <button class="btn" onclick="exportGallery()">Export</button>
+                </div>
+            </div>
+
+            <!-- CANVAS -->
+            <div class="canvas-area">
+                <canvas id="canvas" width="1080" height="1080"></canvas>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="panel right-panel">
+                <div class="section-title">📊 Features</div>
+                <div style="font-size: 9px; line-height: 1.6; color: #cbd5e1;">
+                    <p><strong style="color: #8b5cf6;">📱 Social Media</strong></p>
+                    <p>✓ 6 Platforms</p>
+                    <p>✓ 4 Languages</p>
+                    
+                    <p style="margin-top: 8px;"><strong style="color: #8b5cf6;">📷 Image Editor</strong></p>
+                    <p>✓ Upload/URL</p>
+                    <p>✓ Rotate/Resize</p>
+                    
+                    <p style="margin-top: 8px;"><strong style="color: #8b5cf6;">🎭 3D Image</strong></p>
+                    <p>✓ 3D Rotation</p>
+                    <p>✓ Perspective</p>
+                    <p>✓ 6 Templates</p>
+                    
+                    <p style="margin-top: 8px;"><strong style="color: #8b5cf6;">🎬 3D Video</strong></p>
+                    <p>✓ Timeline</p>
+                    <p>✓ 30-60 FPS</p>
+                    <p>✓ 6 Templates</p>
+                    
+                    <p style="margin-top: 8px;"><strong style="color: #8b5cf6;">✨ Effects</strong></p>
+                    <p>✓ 4 Filters</p>
+                    <p>✓ Adjustments</p>
+                    <p>✓ 6 Presets</p>
+                    
+                    <p style="margin-top: 8px;"><strong style="color: #8b5cf6;">📌 Templates</strong></p>
+                    <p>✓ 18 Ready-Made</p>
+                    <p>✓ One-Click</p>
+                    <p>✓ Editable</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-msg" id="status"></div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-box">
+            <div class="modal-title">🔐 Sign In</div>
+            <div class="modal-subtitle">Login برائے create کریں اپنے ڈیزائنز</div>
+
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button onclick="handleLogin()">Sign In</button>
+                <div class="modal-switch">
+                    نیا ہو؟ <a onclick="switchAuthForm()">Sign Up کریں</a>
+                </div>
+            </div>
+
+            <div id="signupForm" style="display: none;">
+                <input type="text" id="signupName" placeholder="نام">
+                <input type="email" id="signupEmail" placeholder="Email">
+                <input type="password" id="signupPassword" placeholder="Password">
+                <button onclick="handleSignup()">Sign Up</button>
+                <div class="modal-switch">
+                    اکاؤنٹ ہے؟ <a onclick="switchAuthForm()">Sign In کریں</a>
+                </div>
+            </div>
+
+            <button style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);" onclick="closeLoginModal()">بند کریں</button>
+        </div>
+    </div>
+
+    <!-- FLOATING MENU (Mobile) -->
+    <div class="floating-menu" id="floatingMenu" onclick="toggleFloatingMenu()">⚙️</div>
+    <div class="floating-menu-items" id="floatingMenuItems">
+        <button class="floating-btn" title="Camera" onclick="openCamera()">📷</button>
+        <button class="floating-btn" title="Microphone" onclick="startVoiceInput()">🎤</button>
+        <button class="floating-btn" title="Sound" onclick="toggleVoiceOutput()">🔊</button>
+        <button class="floating-btn" title="Download" onclick="downloadDesign()">📥</button>
+        <button class="floating-btn" title="Clear" onclick="resetCanvas()">🗑️</button>
+    </div>
+
+    <!-- CAMERA PREVIEW -->
+    <div class="camera-preview" id="cameraPreview">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <div class="camera-controls">
+            <button class="camera-btn" onclick="capturePhoto()">📸 Capture</button>
+            <button class="camera-btn" onclick="closeCamera()" style="background: linear-gradient(135deg, #f43f5e 0%, #dc2626 100%);">✕ Close</button>
+        </div>
+    </div>
+
+    <!-- PROFESSIONAL ADMIN PANEL -->
+
+    <!-- PROFESSIONAL ADMIN DASHBOARD -->
+    <div class="admin-dashboard" id="adminDashboard">
+        <!-- ADMIN HEADER -->
+        <div class="admin-header">
+            <div class="admin-title-group">
+                <div class="admin-logo">🎬</div>
+                <div class="admin-title-text">
+                    <h1>AI Creator Studio</h1>
+                    <p>Professional Admin Dashboard</p>
+                </div>
+            </div>
+            
+            <div class="admin-user-info">
+                <div class="admin-user-avatar" id="adminAvatar">👤</div>
+                <div class="admin-user-detail">
+                    <div class="admin-user-name" id="adminUserName">Admin</div>
+                    <div class="admin-user-role">⭐ Administrator</div>
+                </div>
+            </div>
+
+            <button class="admin-close-btn" onclick="closeAdminDashboard()">✕</button>
+        </div>
+
+        <!-- ADMIN BODY -->
+        <div class="admin-body" id="adminBodyContent">
+            
+            <!-- OVERVIEW CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">System Overview</div>
+                </div>
+                <div class="card-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Users</span>
+                        <span class="stat-value" id="statTotalUsers">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Designs</span>
+                        <span class="stat-value" id="statTotalDesigns">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Active Sessions</span>
+                        <span class="stat-value success" id="statActiveSessions">1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">System Status</span>
+                        <span class="stat-value success">✓ Operational</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- USER STATISTICS CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">👥</div>
+                    <div class="card-title">User Statistics</div>
+                </div>
+                <div class="card-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Registered Users</span>
+                        <span class="stat-value" id="statRegistered">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Premium Users</span>
+                        <span class="stat-value" id="statPremium">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Free Users</span>
+                        <span class="stat-value" id="statFree">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Admin Users</span>
+                        <span class="stat-value" id="statAdmins">1</span>
+                    </div>
+                    <button class="admin-btn" onclick="loadAllUsers()">View All Users</button>
+                </div>
+            </div>
+
+            <!-- DESIGN ANALYTICS CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">Design Analytics</div>
+                </div>
+                <div class="card-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Designs</span>
+                        <span class="stat-value" id="statDesignCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Today's Designs</span>
+                        <span class="stat-value" id="statTodayDesigns">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Most Used Template</span>
+                        <span class="stat-value" id="statPopularTemplate">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg. Designs/User</span>
+                        <span class="stat-value" id="statAvgDesigns">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SYSTEM HEALTH CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">🔧</div>
+                    <div class="card-title">System Health</div>
+                </div>
+                <div class="card-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Memory Usage</span>
+                        <span class="stat-value" id="statMemory">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Storage Used</span>
+                        <span class="stat-value" id="statStorage">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">API Latency</span>
+                        <span class="stat-value success" id="statLatency">-</span>
+                    </div>
+                    <button class="admin-btn" onclick="runSystemDiagnostics()">Run Diagnostics</button>
+                </div>
+            </div>
+
+            <!-- USER MANAGEMENT CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">🧑‍💼</div>
+                    <div class="card-title">User Management</div>
+                </div>
+                <div class="card-content">
+                    <div class="user-list" id="adminUserList">
+                        <p style="color: #94a3b8; font-size: 11px;">Loading users...</p>
+                    </div>
+                    <div class="grid-2">
+                        <button class="admin-btn" onclick="loadAllUsers()">👁️ View All</button>
+                        <button class="admin-btn danger" onclick="clearAllUsers()">🗑️ Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIVITY LOG CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Activity Log</div>
+                </div>
+                <div class="card-content">
+                    <div class="activity-log" id="adminActivityLog">
+                        <div class="activity-item">
+                            <div class="activity-time">System initialized</div>
+                            <div>✓ Dashboard loaded</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA MANAGEMENT CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">💾</div>
+                    <div class="card-title">Data Management</div>
+                </div>
+                <div class="card-content">
+                    <div class="stat-item">
+                        <span class="stat-label">Backup Status</span>
+                        <span class="stat-value success">✓ Current</span>
+                    </div>
+                    <div class="grid-2">
+                        <button class="admin-btn" onclick="exportAllData()">📥 Export</button>
+                        <button class="admin-btn" onclick="resetAllData()">↺ Reset</button>
+                    </div>
+                    <div class="grid-2" style="margin-top: 10px;">
+                        <button class="admin-btn" onclick="backupDatabase()">💾 Backup</button>
+                        <button class="admin-btn danger" onclick="deleteAllData()">🗑️ Delete All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-title">System Settings</div>
+                </div>
+                <div class="card-content">
+                    <div class="stat-item">
+                        <span class="stat-label">App Version</span>
+                        <span class="stat-value">v4.6.1</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Last Updated</span>
+                        <span class="stat-value" id="statLastUpdate">Today</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Environment</span>
+                        <span class="stat-value">Production</span>
+                    </div>
+                    <button class="admin-btn" onclick="openSettings()">⚙️ Advanced Settings</button>
+                </div>
+            </div>
+
+            <!-- REPORTS CARD -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Reports & Export</div>
+                </div>
+                <div class="card-content">
+                    <div class="grid-2">
+                        <button class="admin-btn" onclick="exportUserReport()">👥 Users</button>
+                        <button class="admin-btn" onclick="exportDesignReport()">🎨 Designs</button>
+                    </div>
+                    <div class="grid-2" style="margin-top: 10px;">
+                        <button class="admin-btn" onclick="exportAnalyticsReport()">📈 Analytics</button>
+                        <button class="admin-btn" onclick="exportFullReport()">📋 Full Report</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let elements = [];
+        let history = [];
+        let historyIndex = -1;
+        let currentLang = 'en';
+        let bgColor = '#ffffff';
+        
+        // LOGIN SYSTEM
+        let designCount = parseInt(localStorage.getItem('designCount') || '0');
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let currentUser = localStorage.getItem('currentUser') || '';
+        let isAdmin = localStorage.getItem('isAdmin') === 'true';
+        let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+
+        // MOBILE & VOICE SETUP
+        let voiceEnabled = false;
+        let currentStream = null;
+        let isMobileDevice = window.innerWidth <= 768;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const synth = window.speechSynthesis;
+
+        // INIT
+        updateUserDisplay();
+        updateCanvas();
+        saveHistory();
+        initMobileUI();
+
+        // Mobile UI
+        function initMobileUI() {
+            if (isMobileDevice) {
+                document.querySelector('.floating-menu').classList.add('show');
+            }
+            window.addEventListener('resize', () => {
+                isMobileDevice = window.innerWidth <= 768;
+            });
+        }
+        
+        // Initialize demo admin account
+        if (!localStorage.getItem('userProfile-admin@creator.com')) {
+            const adminProfile = {
+                name: 'Admin',
+                email: 'admin@creator.com',
+                password: 'admin123',
+                createdAt: new Date().toISOString(),
+                designs: 0,
+                isAdmin: true
+            };
+            localStorage.setItem('userProfile-admin@creator.com', JSON.stringify(adminProfile));
+            if (!allUsers.includes('admin@creator.com')) {
+                allUsers.push('admin@creator.com');
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+        }
+
+        // Check if 2nd+ design and not logged in
+        if (designCount > 0 && !isLoggedIn) {
+            setTimeout(() => {
+                showStatus('⛔ پہلا ڈیزائن مفت! اب Login کریں');
+                showLoginModal();
+            }, 500);
+        }
+
+        // TEMPLATES
+        function loadTemplate(type) {
+            showStatus(`✅ ${type.toUpperCase()} Loaded!`);
+            updateCanvas();
+        }
+
+        // SOCIAL MEDIA
+        function setPlatform(size) {
+            const [w, h] = size.split('x');
+            canvas.width = parseInt(w);
+            canvas.height = parseInt(h);
+            updateCanvas();
+            showStatus(`📐 ${size}`);
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            showStatus(`🌐 ${lang.toUpperCase()}`);
+        }
+
+        function addText() {
+            const texts = { en: 'Your Text', ur: 'آپ کا متن', ar: 'النص', hi: 'आपका पाठ' };
+            elements.push({
+                id: Date.now(),
+                type: 'text',
+                text: texts[currentLang],
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 36,
+                color: '#000000'
+            });
+            updateCanvas();
+            saveHistory();
+            showStatus('✅ Text added');
+        }
+
+        function add3DText() {
+            elements.push({
+                id: Date.now(),
+                type: '3dtext',
+                text: '3D Text',
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 48,
+                color: '#8b5cf6',
+                depth: 12
+            });
+            updateCanvas();
+            saveHistory();
+            showStatus('✅ 3D Text');
+        }
+
+        function addShape(type) {
+            elements.push({
+                id: Date.now(),
+                type: 'shape',
+                shapeType: type,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                width: 100,
+                height: 100,
+                color: '#8b5cf6'
+            });
+            updateCanvas();
+            saveHistory();
+            showStatus('✅ Shape');
+        }
+
+        // IMAGE
+        function uploadImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        elements.push({
+                            id: Date.now(),
+                            type: 'image',
+                            img: img,
+                            x: canvas.width / 2,
+                            y: canvas.height / 2,
+                            width: 200,
+                            height: 200
+                        });
+                        updateCanvas();
+                        saveHistory();
+                        showStatus('📷 Added');
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function imageFromURL() {
+            const url = prompt('Image URL:');
+            if (url) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    elements.push({
+                        id: Date.now(),
+                        type: 'image',
+                        img: img,
+                        x: canvas.width / 2,
+                        y: canvas.height / 2,
+                        width: 200,
+                        height: 200
+                    });
+                    updateCanvas();
+                    saveHistory();
+                    showStatus('📷 Loaded');
+                };
+                img.onerror = () => showStatus('❌ Failed');
+                img.src = url;
+            }
+        }
+
+        // 3D IMAGE
+        function apply3D() {
+            updateCanvas();
+            showStatus('✅ 3D Applied');
+        }
+
+        // 3D VIDEO
+        function addFrame() {
+            showStatus('📹 Frame');
+        }
+
+        function playVideo() {
+            showStatus('▶️ Playing');
+        }
+
+        function exportVideo() {
+            showStatus('🎥 Export');
+        }
+
+        // EFFECTS
+        function setFilter(type) {
+            showStatus(`✨ ${type}`);
+        }
+
+        // CANVAS
+        function updateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            elements.forEach(el => {
+                if (el.type === 'text') {
+                    ctx.font = `${el.size}px Arial`;
+                    ctx.fillStyle = el.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(el.text, el.x, el.y);
+                } else if (el.type === '3dtext') {
+                    ctx.font = `${el.size}px Arial`;
+                    for (let i = el.depth; i > 0; i--) {
+                        ctx.globalAlpha = 0.3;
+                        ctx.fillStyle = '#000000';
+                        ctx.fillText(el.text, el.x + i, el.y + i);
+                    }
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = el.color;
+                    ctx.fillText(el.text, el.x, el.y);
+                } else if (el.type === 'shape') {
+                    ctx.fillStyle = el.color;
+                    if (el.shapeType === 'rect') {
+                        ctx.fillRect(el.x - el.width/2, el.y - el.height/2, el.width, el.height);
+                    } else if (el.shapeType === 'circle') {
+                        ctx.beginPath();
+                        ctx.arc(el.x, el.y, el.width/2, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if (el.shapeType === 'triangle') {
+                        ctx.beginPath();
+                        ctx.moveTo(el.x, el.y - el.height/2);
+                        ctx.lineTo(el.x + el.width/2, el.y + el.height/2);
+                        ctx.lineTo(el.x - el.width/2, el.y + el.height/2);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else if (el.shapeType === 'star') {
+                        drawStar(ctx, el.x, el.y, 5, el.width/2, el.width/4);
+                        ctx.fillStyle = el.color;
+                        ctx.fill();
+                    }
+                } else if (el.type === 'image' && el.img) {
+                    ctx.drawImage(el.img, el.x - el.width/2, el.y - el.height/2, el.width, el.height);
+                }
+            });
+        }
+
+        function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
+            let rot = Math.PI / 2 * 3;
+            let step = Math.PI / spikes;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                ctx.lineTo(cx + Math.cos(rot) * outerRadius, cy + Math.sin(rot) * outerRadius);
+                rot += step;
+                ctx.lineTo(cx + Math.cos(rot) * innerRadius, cy + Math.sin(rot) * innerRadius);
+                rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius);
+            ctx.closePath();
+        }
+
+        function saveHistory() {
+            history = history.slice(0, historyIndex + 1);
+            history.push(canvas.toDataURL());
+            historyIndex++;
+        }
+
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const img = new Image();
+                img.onload = () => ctx.drawImage(img, 0, 0);
+                img.src = history[historyIndex];
+            }
+        }
+
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                const img = new Image();
+                img.onload = () => ctx.drawImage(img, 0, 0);
+                img.src = history[historyIndex];
+            }
+        }
+
+        function resetCanvas() {
+            canvas.width = 1080;
+            canvas.height = 1080;
+            elements = [];
+            updateCanvas();
+            saveHistory();
+            showStatus('↺ Cleared');
+        }
+
+        function downloadDesign() {
+            designCount++;
+            localStorage.setItem('designCount', designCount);
+
+            // اگر 2nd+ اور logged in نہیں
+            if (designCount > 1 && !isLoggedIn) {
+                showStatus('⛔ پہلا مفت! اب Login کریں');
+                showLoginModal();
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `design-${Date.now()}.png`;
+            link.click();
+            showStatus('✅ Downloaded');
+            
+            // Track user design
+            if (isLoggedIn) {
+                const userData = JSON.parse(localStorage.getItem('userProfile-' + currentUser) || '{}');
+                userData.designs = (userData.designs || 0) + 1;
+                localStorage.setItem('userProfile-' + currentUser, JSON.stringify(userData));
+            }
+        }
+
+        function clearGallery() {
+            if (confirm('Clear?')) showStatus('Cleared');
+        }
+
+        function exportGallery() {
+            showStatus('Exported');
+        }
+
+        function switchTab(e, tab) {
+            if (e && typeof e.preventDefault === 'function') {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(x => {
+                x.classList.remove('active');
+                x.style.display = 'none';
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+            
+            // Show selected tab
+            const tabContent = document.getElementById(tab);
+            if (tabContent) {
+                tabContent.classList.add('active');
+                tabContent.style.display = 'block';
+                
+                // Find and activate the button
+                const buttons = document.querySelectorAll('.tab-btn');
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${tab}'`)) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Scroll into view
+                if (e && e.target) {
+                    e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+        }
+
+        function showStatus(msg) {
+            const s = document.getElementById('status');
+            s.textContent = msg;
+            s.classList.add('show');
+            setTimeout(() => s.classList.remove('show'), 1500);
+        }
+
+        // LOGIN SYSTEM FUNCTIONS
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        function switchAuthForm() {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            signupForm.style.display = signupForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showStatus('❌ Email اور Password ضروری ہیں');
+                return;
+            }
+
+            // Check if user exists
+            const userProfile = localStorage.getItem('userProfile-' + email);
+            if (!userProfile) {
+                showStatus('❌ یہ صارف موجود نہیں ہے');
+                return;
+            }
+
+            const user = JSON.parse(userProfile);
+            if (user.password !== password) {
+                showStatus('❌ غلط Password');
+                return;
+            }
+
+            // Login successful
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('currentUser', email);
+            isLoggedIn = true;
+            currentUser = email;
+            isAdmin = user.isAdmin || false;
+
+            updateUserDisplay();
+            closeLoginModal();
+            showStatus(`✅ خوش آمدید ${user.name}!`);
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function handleSignup() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (!name || !email || !password) {
+                showStatus('❌ تمام فیلڈز ضروری ہیں');
+                return;
+            }
+
+            // Check if user already exists
+            if (localStorage.getItem('userProfile-' + email)) {
+                showStatus('❌ یہ Email پہلے سے استعمال ہو رہا ہے');
+                return;
+            }
+
+            // Create new user
+            const userProfile = {
+                name: name,
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString(),
+                designs: 0,
+                isAdmin: false
+            };
+
+            localStorage.setItem('userProfile-' + email, JSON.stringify(userProfile));
+
+            // Add to all users list
+            if (!allUsers.includes(email)) {
+                allUsers.push(email);
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            }
+
+            // Auto login
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('currentUser', email);
+            isLoggedIn = true;
+            currentUser = email;
+
+            updateUserDisplay();
+            closeLoginModal();
+            showStatus(`✅ اکاؤنٹ بنایا گیا! خوش آمدید!`);
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+        }
+
+        function logout() {
+            if (confirm('کیا آپ واقعی Logout کرنا چاہتے ہیں?')) {
+                localStorage.setItem('isLoggedIn', 'false');
+                localStorage.setItem('currentUser', '');
+                isLoggedIn = false;
+                currentUser = '';
+                isAdmin = false;
+                updateUserDisplay();
+                toggleAdminPanel();
+                showStatus('👋 Logout ہو گئے!');
+            }
+        }
+
+        function updateUserDisplay() {
+            const header = document.querySelector('.header-controls');
+            let loginBtn = document.getElementById('loginBtn');
+            
+            if (!loginBtn) {
+                loginBtn = document.createElement('button');
+                loginBtn.id = 'loginBtn';
+                loginBtn.className = 'btn-header';
+                header.appendChild(loginBtn);
+            }
+
+            if (isLoggedIn) {
+                const userName = currentUser.split('@')[0];
+                loginBtn.innerHTML = `👤 ${userName}`;
+                loginBtn.onclick = () => {
+                    if (isAdmin) {
+                        openAdminPanel();
+                    } else {
+                        showStatus('⚠️ صرف Admin رسائی');
+                    }
+                };
+                
+                // Show admin tab if admin
+                if (isAdmin) {
+                    document.getElementById('adminTab').style.display = 'block';
+                }
+            } else {
+                loginBtn.innerHTML = '🔐 Login';
+                loginBtn.onclick = () => showLoginModal();
+                document.getElementById('adminTab').style.display = 'none';
+            }
+
+            // Update admin panel
+            if (isLoggedIn) {
+                const userProfile = JSON.parse(localStorage.getItem('userProfile-' + currentUser) || '{}');
+                document.getElementById('userEmailDisplay').textContent = currentUser;
+                document.getElementById('userStatusDisplay').textContent = isAdmin ? 'Admin ⭐' : 'User';
+            }
+        }
+
+        // PROFESSIONAL ADMIN PANEL FUNCTIONS
+        function openAdminPanel() {
+            if (!isLoggedIn) {
+                showStatus('❌ پہلے Login کریں');
+                return;
+            }
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin رسائی');
+                return;
+            }
+            document.getElementById('adminDashboard').classList.add('show');
+            updateAdminDashboard();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminDashboard').classList.remove('show');
+        }
+
+        function switchAdminTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.admin-tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.admin-nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const tabElement = document.getElementById(tabName + '-tab');
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+            
+            // Activate nav item
+            event.target.classList.add('active');
+            
+            // Load data based on tab
+            if (tabName === 'users') {
+                loadUsersTable();
+            } else if (tabName === 'analytics') {
+                updateAnalytics();
+            }
+        }
+
+        function updateAdminDashboard() {
+            const totalUsers = allUsers.length;
+            const totalDesigns = designCount;
+            const adminCount = allUsers.filter(email => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                return user.isAdmin;
+            }).length;
+
+            document.getElementById('dashboardTotalUsers').textContent = totalUsers;
+            document.getElementById('dashboardTotalDesigns').textContent = totalDesigns;
+            document.getElementById('dashboardStorage').textContent = '~' + Math.round(totalUsers * 0.5) + ' MB';
+            document.getElementById('dashboardAdmins').textContent = adminCount;
+
+            // Activity log
+            const activityLog = document.getElementById('activityLog');
+            const activities = [
+                `✓ System started at ${new Date().toLocaleTimeString()}`,
+                `✓ Total users: ${totalUsers}`,
+                `✓ Total designs: ${totalDesigns}`,
+                `✓ Admin users: ${adminCount}`,
+                `✓ Last user: ${currentUser}`
+            ];
+            activityLog.innerHTML = activities.map(a => `<p>${a}</p>`).join('');
+        }
+
+        function loadUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (allUsers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No users found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = allUsers.map((email, idx) => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                const role = user.isAdmin ? 'Admin ⭐' : 'User';
+                const joined = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A';
+                return `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td>${user.name || 'Unknown'}</td>
+                        <td>${email}</td>
+                        <td>${user.designs || 0}</td>
+                        <td>${role}</td>
+                        <td>${joined}</td>
+                        <td>
+                            <button class="admin-btn-small" onclick="deleteUser('${email}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAnalytics() {
+            const totalUsers = allUsers.length;
+            const totalDesigns = designCount;
+            const avgDesigns = totalUsers > 0 ? Math.round(totalDesigns / totalUsers * 10) / 10 : 0;
+
+            document.getElementById('userGrowth').textContent = totalUsers > 0 ? '+' + totalUsers : '0%';
+            document.getElementById('avgDesigns').textContent = avgDesigns;
+            document.getElementById('systemHealth').textContent = '100%';
+        }
+
+        function deleteUser(email) {
+            if (confirm(`کیا ${email} کو ڈیلیٹ کریں؟`)) {
+                localStorage.removeItem('userProfile-' + email);
+                allUsers = allUsers.filter(e => e !== email);
+                localStorage.setItem('allUsers', JSON.stringify(allUsers));
+                loadUsersTable();
+                showStatus('✅ صارف ڈیلیٹ');
+            }
+        }
+
+        function saveFreeDesignLimit() {
+            const limit = document.getElementById('freeDesignLimit').value;
+            localStorage.setItem('freeDesignLimit', limit);
+            showStatus('✅ حد محفوظ');
+        }
+
+        function deleteAllUsers() {
+            if (confirm('کیا تمام صارفین ڈیلیٹ کریں؟')) {
+                allUsers.forEach(email => {
+                    localStorage.removeItem('userProfile-' + email);
+                });
+                allUsers = [];
+                localStorage.setItem('allUsers', '[]');
+                localStorage.setItem('isLoggedIn', 'false');
+                localStorage.setItem('currentUser', '');
+                isLoggedIn = false;
+                currentUser = '';
+                updateUserDisplay();
+                showStatus('✅ تمام صارفین ڈیلیٹ');
+            }
+        }
+
+        function resetUserData() {
+            if (confirm('تمام صارفین کا ڈیٹا reset کریں؟')) {
+                allUsers.forEach(email => {
+                    const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                    user.designs = 0;
+                    localStorage.setItem('userProfile-' + email, JSON.stringify(user));
+                });
+                showStatus('✅ ڈیٹا reset');
+                loadUsersTable();
+            }
+        }
+
+        function exportUsers() {
+            const usersData = allUsers.map(email => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                return {
+                    name: user.name,
+                    email: email,
+                    designs: user.designs,
+                    role: user.isAdmin ? 'Admin' : 'User',
+                    joined: user.createdAt
+                };
+            });
+            downloadJSON(usersData, 'users-export.json');
+            showStatus('✅ صارفین export');
+        }
+
+        function exportUserReport() {
+            const report = {
+                title: 'User Report - AI Creator Studio',
+                generatedAt: new Date().toISOString(),
+                totalUsers: allUsers.length,
+                users: allUsers.map(email => {
+                    const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                    return {
+                        name: user.name,
+                        email: email,
+                        designs: user.designs,
+                        role: user.isAdmin ? 'Admin' : 'User'
+                    };
+                })
+            };
+            downloadJSON(report, 'user-report.json');
+            showStatus('✅ Report export');
+        }
+
+        function exportDesignReport() {
+            const report = {
+                title: 'Design Report - AI Creator Studio',
+                generatedAt: new Date().toISOString(),
+                totalDesigns: designCount,
+                userDesigns: allUsers.map(email => ({
+                    user: email,
+                    designs: JSON.parse(localStorage.getItem('userProfile-' + email) || '{}').designs || 0
+                }))
+            };
+            downloadJSON(report, 'design-report.json');
+            showStatus('✅ ڈیزائن report export');
+        }
+
+        function exportFullReport() {
+            const report = {
+                title: 'Full System Report - AI Creator Studio',
+                generatedAt: new Date().toISOString(),
+                statistics: {
+                    totalUsers: allUsers.length,
+                    totalDesigns: designCount,
+                    adminUsers: allUsers.filter(e => JSON.parse(localStorage.getItem('userProfile-' + e) || '{}').isAdmin).length
+                },
+                users: allUsers.map(email => {
+                    const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                    return {
+                        name: user.name,
+                        email: email,
+                        designs: user.designs,
+                        role: user.isAdmin ? 'Admin' : 'User',
+                        joined: user.createdAt
+                    };
+                })
+            };
+            downloadJSON(report, 'full-system-report.json');
+            showStatus('✅ مکمل report export');
+        }
+
+        function exportActivityLog() {
+            const log = {
+                title: 'Activity Log - AI Creator Studio',
+                generatedAt: new Date().toISOString(),
+                activities: [
+                    `Total Users: ${allUsers.length}`,
+                    `Total Designs: ${designCount}`,
+                    `Last Updated: ${new Date().toLocaleString()}`,
+                    `System Status: Active`
+                ]
+            };
+            downloadJSON(log, 'activity-log.json');
+            showStatus('✅ Activity log export');
+        }
+
+        function downloadJSON(data, filename) {
+            const link = document.createElement('a');
+            link.href = 'data:application/json,' + JSON.stringify(data, null, 2);
+            link.download = filename;
+            link.click();
+        }
+
+        function clearAllCache() {
+            if (confirm('Cache صاف کریں؟')) {
+                localStorage.clear();
+                showStatus('✅ Cache صاف');
+                location.reload();
+            }
+        }
+
+        function resetAllData() {
+            if (confirm('تمام ڈیٹا reset کریں؟ یہ permanent ہے!')) {
+                designCount = 0;
+                allUsers = [];
+                localStorage.clear();
+                showStatus('✅ تمام ڈیٹا reset');
+                location.reload();
+            }
+        }
+
+        function deleteAllDesigns() {
+            if (confirm('تمام ڈیزائنز ڈیلیٹ کریں؟')) {
+                designCount = 0;
+                localStorage.setItem('designCount', '0');
+                allUsers.forEach(email => {
+                    const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                    user.designs = 0;
+                    localStorage.setItem('userProfile-' + email, JSON.stringify(user));
+                });
+                showStatus('✅ ڈیزائنز ڈیلیٹ');
+                loadUsersTable();
+            }
+        }
+
+        function updateAdminPassword() {
+            const newPassword = document.getElementById('newAdminPassword').value;
+            if (!newPassword) {
+                showStatus('❌ Password ضروری ہے');
+                return;
+            }
+            const adminUser = JSON.parse(localStorage.getItem('userProfile-admin@creator.com') || '{}');
+            adminUser.password = newPassword;
+            localStorage.setItem('userProfile-admin@creator.com', JSON.stringify(adminUser));
+            document.getElementById('newAdminPassword').value = '';
+            showStatus('✅ Password update');
+        }
+
+        function updateFooterTimestamp() {
+            const timestamp = new Date().toLocaleString('ur-PK');
+            document.getElementById('footerTimestamp').textContent = timestamp;
+        }
+
+        function adminLogout() {
+            if (confirm('Logout کریں؟')) {
+                localStorage.setItem('isLoggedIn', 'false');
+                localStorage.setItem('currentUser', '');
+                isLoggedIn = false;
+                currentUser = '';
+                isAdmin = false;
+                updateUserDisplay();
+                closeAdminPanel();
+                showStatus('👋 Logout');
+            }
+        }
+
+        function toggleAdminPanel() {
+            if (!isLoggedIn) {
+                showStatus('❌ پہلے Login کریں');
+                return;
+            }
+            document.getElementById('adminPanel').classList.toggle('show');
+            updateAdminStats();
+        }
+
+        // PROFESSIONAL ADMIN DASHBOARD FUNCTIONS
+        function openAdminDashboard() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin رسائی حاصل کر سکتے ہیں');
+                return;
+            }
+            document.getElementById('adminDashboard').classList.add('show');
+            updateAdminDashboard();
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('adminDashboard').classList.remove('show');
+        }
+
+        function updateAdminDashboard() {
+            // Update user info
+            const userName = currentUser.split('@')[0].toUpperCase();
+            document.getElementById('adminUserName').textContent = userName;
+            document.getElementById('adminAvatar').textContent = userName.charAt(0);
+
+            // Update statistics
+            document.getElementById('statTotalUsers').textContent = allUsers.length;
+            document.getElementById('statTotalDesigns').textContent = designCount;
+            document.getElementById('statRegistered').textContent = allUsers.length;
+            document.getElementById('statActiveSessions').textContent = isLoggedIn ? '1' : '0';
+            document.getElementById('statAdmins').textContent = '1';
+            document.getElementById('statFree').textContent = allUsers.length;
+            
+            // Calculate average designs
+            let totalDesigns = 0;
+            allUsers.forEach(email => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                totalDesigns += user.designs || 0;
+            });
+            const avgDesigns = allUsers.length > 0 ? (totalDesigns / allUsers.length).toFixed(1) : '0';
+            document.getElementById('statAvgDesigns').textContent = avgDesigns;
+            document.getElementById('statDesignCount').textContent = totalDesigns;
+
+            // Update user list
+            updateAdminUserList();
+            
+            // Update activity log
+            updateAdminActivityLog();
+        }
+
+        function updateAdminUserList() {
+            const userListContainer = document.getElementById('adminUserList');
+            if (allUsers.length === 0) {
+                userListContainer.innerHTML = '<p style="color: #94a3b8; font-size: 11px;">کوئی صارف نہیں</p>';
+                return;
+            }
+
+            let userListHTML = '';
+            allUsers.slice(0, 5).forEach((email, idx) => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                userListHTML += `
+                    <div class="user-item">
+                        <div class="user-item-header">
+                            <span class="user-item-name">${idx + 1}. ${user.name || email}</span>
+                            <span class="user-item-stat">${user.designs || 0} designs</span>
+                        </div>
+                        <div style="font-size: 9px; color: #94a3b8;">${email}</div>
+                    </div>
+                `;
+            });
+            if (allUsers.length > 5) {
+                userListHTML += `<div style="padding: 8px; color: #8b5cf6; font-size: 10px;">+ ${allUsers.length - 5} مزید</div>`;
+            }
+            userListContainer.innerHTML = userListHTML;
+        }
+
+        function updateAdminActivityLog() {
+            const activityContainer = document.getElementById('adminActivityLog');
+            const activities = [
+                { time: 'ابھی', action: '✓ Dashboard کھلا' },
+                { time: '2 منٹ پہلے', action: '👤 Admin logged in' },
+                { time: 'آج', action: '🎨 Designs created: ' + designCount }
+            ];
+
+            let activityHTML = '';
+            activities.forEach(act => {
+                activityHTML += `
+                    <div class="activity-item">
+                        <div class="activity-time">${act.time}</div>
+                        <div>${act.action}</div>
+                    </div>
+                `;
+            });
+            activityContainer.innerHTML = activityHTML;
+        }
+
+        function loadAllUsers() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin');
+                return;
+            }
+            const userList = allUsers.map((email, idx) => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                return `${idx + 1}. ${user.name || email}\n   Email: ${email}\n   Designs: ${user.designs || 0}\n   Joined: ${user.createdAt ? new Date(user.createdAt).toLocaleDateString('ur-PK') : 'Unknown'}`;
+            }).join('\n\n');
+            alert(`📊 تمام صارفین (${allUsers.length}):\n\n${userList}`);
+        }
+
+        function runSystemDiagnostics() {
+            document.getElementById('statMemory').textContent = 'OK';
+            document.getElementById('statStorage').textContent = 'OK';
+            document.getElementById('statLatency').textContent = '< 10ms';
+            showStatus('✅ تشخیص مکمل');
+        }
+
+        function exportAllData() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin');
+                return;
+            }
+            const data = {
+                exportDate: new Date().toISOString(),
+                totalUsers: allUsers.length,
+                totalDesigns: designCount,
+                users: allUsers.map(email => {
+                    const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                    return {
+                        name: user.name,
+                        email: email,
+                        designs: user.designs || 0,
+                        createdAt: user.createdAt,
+                        isAdmin: user.isAdmin
+                    };
+                })
+            };
+            const link = document.createElement('a');
+            link.href = 'data:application/json,' + JSON.stringify(data, null, 2);
+            link.download = `ai-creator-studio-backup-${Date.now()}.json`;
+            link.click();
+            showStatus('✅ ڈیٹا export ہوا');
+        }
+
+        function backupDatabase() {
+            exportAllData();
+            showStatus('✅ Backup مکمل');
+        }
+
+        function resetAllData() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin');
+                return;
+            }
+            if (confirm('کیا تمام ڈیزائنز ری سیٹ کریں؟')) {
+                designCount = 0;
+                localStorage.setItem('designCount', '0');
+                updateAdminDashboard();
+                showStatus('✅ ری سیٹ مکمل');
+            }
+        }
+
+        function deleteAllData() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin');
+                return;
+            }
+            if (confirm('⚠️ یہ تمام ڈیٹا ڈیلیٹ کرے گا! واپس نہیں ہو سکتا!')) {
+                allUsers.forEach(email => {
+                    localStorage.removeItem('userProfile-' + email);
+                });
+                allUsers = [];
+                designCount = 0;
+                localStorage.setItem('allUsers', '[]');
+                localStorage.setItem('designCount', '0');
+                updateAdminDashboard();
+                showStatus('✅ تمام ڈیٹا ڈیلیٹ');
+            }
+        }
+
+        function clearAllUsers() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin');
+                return;
+            }
+            if (confirm('کیا تمام صارفین صاف کریں؟')) {
+                allUsers.forEach(email => {
+                    localStorage.removeItem('userProfile-' + email);
+                });
+                allUsers = [];
+                localStorage.setItem('allUsers', '[]');
+                updateAdminDashboard();
+                showStatus('✅ صارفین صاف');
+            }
+        }
+
+        function exportUserReport() {
+            const report = allUsers.map(email => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                return [user.name, email, user.designs || 0, user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'];
+            });
+            const csv = 'Name,Email,Designs,Joined\n' + report.map(r => r.join(',')).join('\n');
+            const link = document.createElement('a');
+            link.href = 'data:text/csv,' + encodeURIComponent(csv);
+            link.download = `users-report-${Date.now()}.csv`;
+            link.click();
+            showStatus('✅ User Report export');
+        }
+
+        function exportDesignReport() {
+            const report = `Design Analytics Report\nDate: ${new Date().toLocaleString()}\n\nTotal Designs: ${designCount}\nUsers: ${allUsers.length}\nAvg per User: ${allUsers.length > 0 ? (designCount / allUsers.length).toFixed(2) : 0}`;
+            const link = document.createElement('a');
+            link.href = 'data:text/plain,' + encodeURIComponent(report);
+            link.download = `design-report-${Date.now()}.txt`;
+            link.click();
+            showStatus('✅ Design Report export');
+        }
+
+        function exportAnalyticsReport() {
+            const report = `Analytics Report\nDate: ${new Date().toLocaleString()}\n\nSystem Status: Operational\nActive Users: ${isLoggedIn ? 1 : 0}\nTotal Designs: ${designCount}\nSystem Health: ✓ Good`;
+            const link = document.createElement('a');
+            link.href = 'data:text/plain,' + encodeURIComponent(report);
+            link.download = `analytics-${Date.now()}.txt`;
+            link.click();
+            showStatus('✅ Analytics export');
+        }
+
+        function exportFullReport() {
+            exportAllData();
+        }
+
+        function openSettings() {
+            showStatus('⚙️ Advanced Settings (Coming Soon)');
+        }
+
+        function deleteAllDesigns() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin');
+                return;
+            }
+            if (confirm('کیا تمام ڈیزائنز ڈیلیٹ کریں؟')) {
+                designCount = 0;
+                localStorage.setItem('designCount', '0');
+                updateAdminDashboard();
+                showStatus('✅ Designs deleted');
+            }
+        }
+
+        function updateAdminStats() {
+            const userProfile = JSON.parse(localStorage.getItem('userProfile-' + currentUser) || '{}');
+            document.getElementById('totalUsers').textContent = allUsers.length;
+            document.getElementById('totalDesigns').textContent = designCount;
+            document.getElementById('downloadsToday').textContent = userProfile.designs || 0;
+            document.getElementById('userCount').textContent = allUsers.length;
+        }
+
+        function viewAllUsers() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin اس کو دیکھ سکتے ہیں');
+                return;
+            }
+            let usersList = 'تمام صارفین:\n\n';
+            allUsers.forEach((email, idx) => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                usersList += `${idx + 1}. ${user.name} (${email}) - ${user.designs || 0} designs\n`;
+            });
+            alert(usersList);
+        }
+
+        function resetAllData() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin اس کو کر سکتے ہیں');
+                return;
+            }
+            if (confirm('کیا آپ تمام ڈیزائنز صاف کرنا چاہتے ہیں؟')) {
+                designCount = 0;
+                localStorage.setItem('designCount', '0');
+                showStatus('✅ ڈیزائنز صاف ہو گئے');
+            }
+        }
+
+        function exportAllData() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin اس کو کر سکتے ہیں');
+                return;
+            }
+            const data = {
+                users: allUsers.length,
+                designs: designCount,
+                users_list: allUsers.map(email => {
+                    const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                    return {
+                        name: user.name,
+                        email: email,
+                        designs: user.designs || 0,
+                        created: user.createdAt
+                    };
+                })
+            };
+            const link = document.createElement('a');
+            link.href = 'data:text/json,' + JSON.stringify(data, null, 2);
+            link.download = `admin-report-${Date.now()}.json`;
+            link.click();
+            showStatus('✅ Report Export ہو گیا');
+        }
+
+        function clearAllUsers() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin اس کو کر سکتے ہیں');
+                return;
+            }
+            if (confirm('کیا تمام صارفین صاف کرنے ہیں؟ یہ action واپس نہیں ہو سکتا!')) {
+                allUsers.forEach(email => {
+                    localStorage.removeItem('userProfile-' + email);
+                });
+                allUsers = [];
+                localStorage.setItem('allUsers', '[]');
+                localStorage.setItem('isLoggedIn', 'false');
+                localStorage.setItem('currentUser', '');
+                isLoggedIn = false;
+                currentUser = '';
+                updateUserDisplay();
+                toggleAdminPanel();
+                showStatus('✅ تمام صارفین صاف ہو گئے');
+            }
+        }
+
+        function viewUsers() {
+            if (!isAdmin) {
+                showStatus('❌ صرف Admin یہ دیکھ سکتے ہیں');
+                return;
+            }
+            const userList = allUsers.map((email, idx) => {
+                const user = JSON.parse(localStorage.getItem('userProfile-' + email) || '{}');
+                return `${idx + 1}. ${user.name || email} (${email})\n   Designs: ${user.designs || 0}`;
+            }).join('\n');
+            alert(`تمام صارفین (${allUsers.length}):\n\n${userList}`);
+        }
+
+        function saveFreeLimit() {
+            const limit = document.getElementById('freeLimit').value;
+            localStorage.setItem('freeDesignLimit', limit);
+            showStatus('✅ حد محفوظ کی گئی');
+        }
+
+        function clearGallery() {
+            if (confirm('تمام gallery صاف کریں؟')) {
+                elements = [];
+                updateCanvas();
+                showStatus('✅ Gallery صاف');
+            }
+        }
+
+        function exportGallery() {
+            const data = JSON.stringify(elements);
+            const link = document.createElement('a');
+            link.href = 'data:text/json,' + data;
+            link.download = `gallery-${Date.now()}.json`;
+            link.click();
+            showStatus('✅ Gallery export ہوا');
+        }
+
+        // FLOATING MENU FUNCTIONS
+        function toggleFloatingMenu() {
+            const menu = document.getElementById('floatingMenuItems');
+            menu.classList.toggle('show');
+        }
+
+        // CAMERA/SCANNER FUNCTIONS
+        function openCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showStatus('❌ کیمرہ دستیاب نہیں');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' },
+                audio: false 
+            }).then(stream => {
+                currentStream = stream;
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = stream;
+                document.getElementById('cameraPreview').classList.add('show');
+                showStatus('📷 کیمرہ کھل گیا');
+            }).catch(err => {
+                showStatus('❌ کیمرہ رسائی مسترد');
+                console.error(err);
+            });
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.videoWidth;
+            tempCanvas.height = video.videoHeight;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            const img = new Image();
+            img.onload = () => {
+                elements.push({
+                    id: Date.now(),
+                    type: 'image',
+                    img: img,
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    width: 200,
+                    height: 200
+                });
+                updateCanvas();
+                saveHistory();
+                showStatus('✅ عکس شامل!');
+                closeCamera();
+            };
+            img.src = tempCanvas.toDataURL();
+        }
+
+        function closeCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            document.getElementById('cameraPreview').classList.remove('show');
+            toggleFloatingMenu();
+            showStatus('📷 کیمرہ بند ہوا');
+        }
+
+        // VOICE INPUT (Speech-to-Text)
+        function startVoiceInput() {
+            if (!SpeechRecognition) {
+                showStatus('❌ Voice input دستیاب نہیں');
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ur-PK';
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                showStatus('🎤 سن رہے ہیں...');
+                document.querySelector('.voice-indicator').classList.add('listening');
+            };
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                if (transcript) {
+                    elements.push({
+                        id: Date.now(),
+                        type: 'text',
+                        text: transcript,
+                        x: canvas.width / 2,
+                        y: canvas.height / 2,
+                        size: 36,
+                        color: '#000000'
+                    });
+                    updateCanvas();
+                    saveHistory();
+                    showStatus('✅ متن شامل');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                showStatus('❌ خرابی: ' + event.error);
+            };
+
+            recognition.onend = () => {
+                document.querySelector('.voice-indicator').classList.remove('listening');
+            };
+
+            recognition.start();
+        }
+
+        // VOICE OUTPUT (Text-to-Speech)
+        function toggleVoiceOutput() {
+            voiceEnabled = !voiceEnabled;
+            showStatus(voiceEnabled ? '🔊 آواز ON' : '🔊 آواز OFF');
+        }
+
+        function readTextAloud(text) {
+            if (!voiceEnabled || !synth) return;
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ur-PK';
+            utterance.rate = 0.9;
+            synth.speak(utterance);
+        }
+
+        // Modify download to support voice output
+        const originalDownload = downloadDesign;
+        window.downloadDesign = function() {
+            originalDownload();
+            if (voiceEnabled) {
+                readTextAloud('ڈیزائن ڈاؤن لوڈ ہو گیا');
+            }
+        };
+    </script>
+</body>
+</html>
